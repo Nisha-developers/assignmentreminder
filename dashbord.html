@@ -61,7 +61,7 @@
            <input type="text" id="course" required>
            <label for="">Deadline</label>
            <input type="date" id="date" required>
-           <label for="time"></label>
+           <label for="time">Time</label>
            <input type="time" id="time" placeholder="Select time" required>
            <label for="">Piority</label>
            <div class="radio-link">
@@ -103,23 +103,7 @@
         </div>
     </div>
 
-    <div class="modal" id="eventModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Add Event</h2>
-                <button class="close-btn" onclick="closeModal()">×</button>
-            </div>
-            <div class="form-group">
-                <label for="eventTitle">Event Title</label>
-                <input type="text" id="eventTitle" placeholder="Enter event title">
-            </div>
-            <div class="form-group">
-                <label for="eventTime">Time (optional)</label>
-                <input type="time" id="eventTime">
-            </div>
-            <button class="btn-primary" onclick="saveEvent()">Add Event</button>
-        </div>
-    </div>
+   
            </div>
            <!-- Calender Ends -->
 
