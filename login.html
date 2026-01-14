@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <style>
+      /* ===== RESET-ish ===== */
+*{
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* ===== PAGE BACKGROUND ===== */
+body{
+    background-color: rgb(242, 200, 185);
+}
+
+/* ===== MAIN CONTAINER ===== */
+div.container{
+    background-color: white;
+    min-height: 85vh;
+    max-width: 600px;
+    width: 80%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2rem;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* ===== HEADER ===== */
+header{
+    padding: 2rem;
+    background-color: rgb(4, 4, 92);
+    border-radius: 1rem;
+}
+
+header > div{
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-size: 25px;
+}
+
+/* ===== FORM ===== */
+form{
+    margin-top: 1.5rem;
+    padding-inline: 2rem;
+}
+
+/* ===== LABELS ===== */
+label{
+    display: block;
+    margin-bottom: 1.2rem;
+    font-weight: 500;
+}
+
+/* ===== INPUTS ===== */
+input[type='email'],
+input[type='password']{
+    width: 100%;
+    height: 35px;
+    display: block;
+    border-radius: 0.4rem;
+    border: 1px solid black;
+    padding-inline: 0.6rem;
+    margin-top: 5px;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+input[type='submit']{
+    width: 200px;
+    height: 35px;
+    display: block;
+    margin: 1.5rem auto;
+    background-color: blue;
+    cursor: pointer;
+    border-radius: 2rem;
+    border: none;
+    color: white;
+    font-size: 15px;
+}
+
+input[type='submit']:hover{
+    background-color: rgb(23, 23, 106);
+}
+
+input[type='submit']:disabled{
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ===== MESSAGES ===== */
+#error{
+    color: red;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 0.5rem;
+}
+
+#success{
+    color: green;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 0.5rem;
+}
+
+/* ===== LINKS ===== */
+a{
+    text-decoration: none;
+    font-style: italic;
+    color: rgb(4, 4, 92);
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
+/* ===== FORGOT PASSWORD ===== */
+#linkpassword{
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+/* ===== SIGN UP REDIRECT ===== */
+div.donot{
+    display: flex;
+    column-gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>User Login</div>
+        </header> 
+        <form id="loginForm">
+            <label>
+                Email
+                <input type="email" required id="email">
+            </label>
+
+            <label>
+                Password
+                <input type="password" required id="password">
+            </label>
+
+            <input type="submit" value="Login" id="submitBtn">
+
+            <p id="error" style="color:red;"></p>
+            <p id="success" style="color:green;"></p>
+
+            <a href="#" id="linkpassword">Forget password?</a>
+
+            <div class="donot">
+                <div>Do not have an account?</div>
+                <a href="signup.html">Sign up</a>
+            </div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+        
+        const supabaseUrl = 'https://cnnpcbtjlgnwzijmeijj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNubnBjYnRqbGdud3ppam1laWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMzYwNTEsImV4cCI6MjA2ODYxMjA1MX0.XUAfi5Eh3sgc4rYp7K3eOE0q6tfqUHYpXMFFze4Ev0w';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const form = document.getElementById("loginForm");
+        const errorEl = document.getElementById("error");
+        const successEl = document.getElementById("success");
+        const submitBtn = document.getElementById("submitBtn");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            errorEl.textContent = "";
+            successEl.textContent = "";
+            submitBtn.disabled = true;
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            try {
+                // Sign in user
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+
+                if (error) throw error;
+
+                successEl.textContent = "Login successful! Loading your profile...";
+
+                // Load user info
+                const userInfo = await loadUserInfo(email);
+                
+                if (userInfo) {
+                    // Store user info in sessionStorage for dashboard
+                    sessionStorage.setItem('userProfile', JSON.stringify(userInfo));
+                    sessionStorage.setItem('userEmail', email);
+                    
+                    successEl.textContent = "Login successful! Redirecting...";
+                    console.log(userInfo);
+                    // Redirect after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = "dashbord.html";
+                    }, 3000);
+                } else {
+                    throw new Error("Could not load user profile");
+                }
+
+            } catch (err) {
+                errorEl.textContent = err.message;
+                submitBtn.disabled = false;
+            }
+        });
+
+        const forgotLink = document.getElementById("linkpassword");
+
+        forgotLink.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            errorEl.textContent = "";
+            successEl.textContent = "";
+
+            const email = document.getElementById("email").value.trim();
+
+            if (!email) {
+                errorEl.textContent = "Please enter your email to reset password";
+                return;
+            }
+
+            try {
+                // Use the current domain for redirect, or update this to your production URL
+                const redirectUrl = `${window.location.origin}/reset-password.html`;
+                
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl,
+                });
+
+                if (error) throw error;
+
+                successEl.textContent = "Password reset link sent to your email!";
+                
+            } catch (err) {
+                errorEl.textContent = err.message;
+            }
+        });
+
+        async function loadUserInfo(userId) {
+            try {
+                const { data, error } = await supabase
+                    .from("profiles")
+                    .select("*")
+                    .eq("email", userId)
+                    .single();
+
+                if (error) {
+                    console.error("Profile load error:", error);
+                    return null;
+                }
+
+                return data;
+            } catch (err) {
+                console.error("Unexpected error loading profile:", err);
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>

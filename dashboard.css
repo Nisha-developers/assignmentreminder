@@ -1,0 +1,538 @@
+  *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: 80px auto 40px;
+             color: white;
+            grid-template-areas: 
+            'header header header header'
+            'aside body body body'
+            'footer footer footer footer'
+            ;
+            min-height: 100vh;
+            @media screen and (min-width:768px){
+             grid-template-columns: 1fr 2fr 2fr 2fr;
+            }
+        }
+        .header{
+             background: rgb(3, 3, 108);
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-inline: 1rem;
+            z-index: 1000;
+            background-color: rgb(62, 62, 182);
+            box-shadow: 2px 2px 8px black;
+        }
+        .aside{
+            background:rgb(62, 62, 182);
+             box-shadow: 2px 2px 8px black;
+            grid-area: aside;
+            display: flex;
+            justify-content: center;
+             position: fixed;
+             height: 100vh;
+             width: 15%;
+             @media screen and (max-width: 770px){
+                width: 25%;
+             }
+        }
+        .body{
+            background-color: rgb(174, 174, 222);
+            grid-area: body;
+            color: black;
+            padding: 2rem 1.5rem;
+             @media screen and (max-width:340px){
+          padding-inline: 0.5rem;
+     }
+
+        }
+        .footer{
+        background-color: rgb(62, 62, 182);
+        box-shadow: 2px 2px 8px black;
+       grid-area: footer;
+        }
+        .notification{
+            position: relative;
+            cursor: pointer;
+        }
+        .no-message{
+            position: absolute;
+            top: -6px;
+            color: white;
+            right: -6px;
+            height: 15px;
+            width: 15px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: red;
+        }
+
+        .aside > ul{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .calender{
+            display: none;
+        }
+        .aside > ul li{
+            list-style: none;
+            margin-bottom: 2.5rem;
+            font-weight: bold;
+            font-size: 17px;
+            cursor: pointer;
+        }
+         .aside > ul li.active{
+            color: yellow;
+         }
+           .aside > ul li:hover{
+            color: yellow;
+           }
+ .footer{
+    color: white;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-style: italic;
+  z-index: 1000;
+ }
+ 
+ .reminder{
+    display: none;
+ }
+ .assignmment{
+    display: none;
+ }
+ #linksIn{
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: clamp(1rem, 3vw, 3rem);
+    font-family: cursive;
+ }
+ label:not(.radio-link label){
+    display: block;
+    color: black;
+    margin-bottom: 0.3rem;
+ }
+ input:not(.radio-link input){
+    width: 100%;
+    margin-bottom: 0.8rem;
+    height: 30px;
+    border: none;
+    padding-inline: 0.5rem;
+ }
+  input:focus{
+    outline: none;
+  }
+ 
+  div.notification-settings{
+    display: none;
+  }
+  div.noAssignment{
+    padding: 2rem;
+    background-color: white;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+  }
+  form.design-aSS{
+    background-color: white;
+    padding: 2rem 1rem;
+    border-radius: 2rem;
+    width: 90%;
+    margin-inline: auto;
+    max-width: 600px;
+    @media screen and (max-width: 340px){
+        width: 100%;
+    }
+  }
+  form.design-aSS input{
+    border: 0.5px solid black;
+    border-radius: 0.5rem;
+  }
+   form.design-aSS textarea{
+    width: 100%;
+    border-radius: 0.5rem;
+        border: 0.5px solid black;
+   }
+  div.radio-link {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+}
+div.radio-link label {
+    cursor: pointer;   
+    
+}
+
+div.radio-link input {
+    margin: 0;
+    height: 16px; 
+}
+button.assignment{
+    height: 30px;
+    background-color: blue;
+    padding-inline: 2rem;
+    color: white;
+    font-weight: bold;
+    margin-inline: auto;
+    display: block;
+    cursor: pointer;
+    border: none;
+    transition: 0.3s;
+    border-radius: 13px;
+}
+button.assignment:hover{
+    background-color: rgb(1, 1, 52);
+}
+.containers {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .headers {
+            background: rgb(3, 3, 108);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+              @media screen and (max-width: 470px) {
+                gap: 0px;
+              }
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        @media (min-width: 768px) {
+            .btn {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+            font-size: 18px;
+        }
+
+        @media (min-width: 768px) {
+            .btn-icon {
+                padding: 10px 15px;
+                font-size: 20px;
+            }
+        }
+
+        .calendar-container {
+            padding: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .calendar-container {
+                padding: 30px;
+            }
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+             @media screen and (max-width:440px){
+        gap: 0px;
+     }
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+            padding: 8px 5px;
+            font-size: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .weekday {
+                padding: 15px;
+                font-size: 14px;
+            }
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .days {
+                gap: 10px;
+            }
+        }
+
+        .day {
+            height: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .day {
+                min-height: 40px;
+                padding: 10px;
+            }
+        }
+
+        .day:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .day.empty {
+            background: #f5f5f5;
+            cursor: default;
+            border-color: transparent;
+        }
+
+        .day.empty:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .day.today {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+
+        .day.today .day-number {
+            color: white;
+        }
+
+        .events {
+            margin-top: 5px;
+        }
+        div.profile label{
+            font-size: 24px !important;
+            font-weight: bold;
+        }
+ div.profile input{
+    max-width: 500px;
+ }
+        .event {
+            background: #667eea;
+            color: white;
+            padding: 5px 8px;
+            margin: 3px 0;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+      .each-title{
+        padding-block: 0.5rem;
+        width: 90%;
+        max-width: 600px;
+        border: 1px solid black;
+        word-break: break-all;
+        background-color: white;
+        margin-bottom: 2rem;
+        border-radius: 0.5rem;
+        padding-inline: 1rem;
+      }
+      .each-title span{
+        font-weight: bold;
+        padding-right: 0.5rem;
+      }
+        .event:hover {
+            background: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #667eea;
+        }
+  @media screen and (max-width: 470px) {
+    #monthYear{
+        font-size: 18px !important;
+        font-weight: bold;
+        margin-left: -20px;
+    }
+    
+  }
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .welcome-message{
+            font-weight: bold;
+            font-size: clamp(1.5rem, 3vw, 4rem);
+            font-family: cursive;
+        }
+        .profile form{
+        margin-inline: auto;
+        display: block;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 1.5rem;
+        display: grid;
+        place-items: center;
+        max-width: 600px;
+        }
+          .profile form input{
+           border: 1px solid black;
+           border-radius: 0.5rem;
+          }
+          .profile form label{
+           margin-right: auto;
+           padding-left: 1.2rem;
+          }
+       

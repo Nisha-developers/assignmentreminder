@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+
+    <style>
+        header > div{
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 25px;
+        }
+
+        input[type='text'],
+        input[type='email'],
+        input[type='password']{
+          width: 100%;
+            height: 25px;
+            display: block;
+            border-radius: 0.4rem;
+            border: 1px solid black;
+        }
+
+        header{
+            padding: 2rem;
+            background-color: rgb(4, 4, 92);
+            border-radius: 1rem;
+        }
+
+        form{
+            margin-top: 1.5rem;
+            margin-inline: auto;
+        }
+
+        label{
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        body{
+            background-color: rgb(242, 200, 185);
+        }
+
+        input[type='submit']{
+            width: 70px;
+            height: 30px;
+        }
+
+        div.container{
+            background-color: white;
+            min-height: 85vh;
+            max-width: 600px;
+            width: 80%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2rem;
+            margin-top: 2rem;
+        }
+
+        a{
+            text-decoration: none;
+            font-style: italic;
+        }
+        div.form-design{
+            margin-inline: auto;
+            padding-inline: 2rem;
+        }
+
+        div.have{
+            display: flex;
+            column-gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        input[type='submit']{
+            width: 200px;
+            display: block;
+            margin-inline: auto;
+            background-color: blue;
+            cursor: pointer;
+            border-radius: 2rem;
+            border: none;
+            color: white;
+        }
+        input[type='submit']:hover{
+            background-color: rgb(23, 23, 106);
+        }
+        #success{
+            color: green;
+            font-weight: bold;
+            font-size: 17px;
+
+        }
+        #error{
+             color: red;
+            font-weight: bold;
+            font-size: 17px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <div>User Sign Up</div>
+    </header>
+
+    <form action="">
+<div class="form-design">
+        <label for="firstName">
+            First Name
+            <input type="text" id="firstName" required>
+        </label>
+          <label for="lastName">
+            Last Name
+            <input type="text" id="lastName" required>
+        </label>
+          <label for="department">
+           Department
+            <input type="text" id="department" required>
+        </label>
+
+        <label for="email">
+            Email
+            <input type="email" id="email" required>
+        </label>
+
+        <label for="password">
+            Password
+            <input type="password" id="password" required>
+        </label>
+
+        <label for="cpassword">
+            Confirm Password
+            <input type="password" id="cpassword" required>
+        </label>
+
+        <div id="success"></div>
+        <div id="error"></div>
+        <input type="submit" value="Sign Up" id="signupForm">
+
+        <div class="have">
+            <div>Already have an account?</div>
+            <a href="login.html">Login</a>
+        </div>
+        </div>
+
+    </form>
+ 
+</div>
+<script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const supabaseUrl = 'https://cnnpcbtjlgnwzijmeijj.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNubnBjYnRqbGdud3ppam1laWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMzYwNTEsImV4cCI6MjA2ODYxMjA1MX0.XUAfi5Eh3sgc4rYp7K3eOE0q6tfqUHYpXMFFze4Ev0w';
+const supabase = createClient(supabaseUrl, supabaseKey);
+const form = document.getElementById("signupForm");
+console.log(form);
+const errorEl = document.getElementById("error");
+const successEl = document.getElementById("success");
+
+form.addEventListener("click", async (e) => {
+    console.log('hi')
+  e.preventDefault();
+  errorEl.textContent = "";
+  successEl.textContent = "";
+
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName = document.getElementById("lastName").value.trim();
+  const department = document.getElementById("department").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("cpassword").value;
+let userInfo = [];
+  // 🔐 Client-side validation
+  if (password !== confirmPassword) {
+    errorEl.textContent = "Passwords do not match";
+    return;
+  }
+
+  if (password.length < 6) {
+    errorEl.textContent = "Password must be at least 6 characters";
+    return;
+  }
+
+  try {
+    // 1️⃣ Sign up user
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+
+    const user = data.user;
+
+    // 2️⃣ Save extra info
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert([
+        {
+          id: user.id,
+          first_name: firstName,
+          last_name: lastName,
+          department,
+          email,
+        },
+      ]);
+
+    if (profileError) throw profileError;
+
+    successEl.textContent =
+      "Account created successfully! Check your email to verify.";
+      userInfo = [
+        {
+          id: user.id,
+          first_name: firstName,
+          last_name: lastName,
+          department,
+          email,
+        },
+      ];
+    sessionStorage.setItem('keyInfomation', JSON.stringify(userInfo));
+      setTimeout(()=>{
+window.location.href = 'dashbord.html'
+      }, 3000)
+       
+
+    form.reset();
+
+  } catch (err) {
+    errorEl.textContent = err.message;
+  }
+});
+
+</script>
+</body>
+</html>
