@@ -46,6 +46,7 @@
             background-color: rgb(174, 174, 222);
             grid-area: body;
             color: black;
+            position: relative;
             padding: 2rem 1.5rem;
              @media screen and (max-width:340px){
           padding-inline: 0.5rem;
@@ -151,6 +152,10 @@
     width: 90%;
     margin-inline: auto;
     max-width: 600px;
+     position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     @media screen and (max-width: 340px){
         width: 100%;
     }
@@ -163,6 +168,8 @@
     width: 100%;
     border-radius: 0.5rem;
         border: 0.5px solid black;
+         padding-inline: 0.5rem;
+         padding-block: 0.8rem;
    }
   div.radio-link {
     display: flex;
@@ -523,10 +530,14 @@ button.assignment:hover{
         background-color: white;
         padding: 2rem;
         border-radius: 1.5rem;
-        display: grid;
-        place-items: center;
+        width: 90%;
         max-width: 600px;
+         position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         }
+        
           .profile form input{
            border: 1px solid black;
            border-radius: 0.5rem;
