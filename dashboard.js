@@ -28,6 +28,9 @@ const firstName = document.getElementById('firstName')
 const lastName = document.getElementById('lastName');
 const departmnent = document.getElementById('department')
 const email = document.getElementById('email');
+document.getElementById('logout').addEventListener('click', ()=>{
+  window.location.href = 'index.html'
+}) 
 
 let userEmail = '';
 
