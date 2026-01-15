@@ -4,6 +4,14 @@ const supabaseUrl = 'https://cnnpcbtjlgnwzijmeijj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNubnBjYnRqbGdud3ppam1laWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMzYwNTEsImV4cCI6MjA2ODYxMjA1MX0.XUAfi5Eh3sgc4rYp7K3eOE0q6tfqUHYpXMFFze4Ev0w';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// EmailJS Configuration
+const EMAILJS_PUBLIC_KEY = 'MAgnn9znjKuZbwSaZ'; 
+const EMAILJS_SERVICE_ID = 'service_lirpbvw'; 
+const EMAILJS_TEMPLATE_ID = 'template_qi6hv46'; // Replace with your template ID
+
+// Initialize EmailJS
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
 const { data: { session } } = await supabase.auth.getSession();
 
 if (!session) {
@@ -31,8 +39,10 @@ const email = document.getElementById('email');
 document.getElementById('logout').addEventListener('click', ()=>{
   window.location.href = 'index.html'
 }) 
+let timeVal = '';
 
 let userEmail = '';
+let userName = '';
 
 const result = JSON.parse(sessionStorage.getItem('keyInfomation')) 
 console.log(result)
@@ -45,6 +55,7 @@ if(result === null){
   departmnent.value = signUpResult.department;
   email.value = signUpResult.email;
   userEmail = signUpResult.email;
+  userName = `${signUpResult.first_name} ${signUpResult.last_name}`;
 } else {
   console.log(result);
   welcomeMessage.textContent = `Welcome ${result[0].first_name} ${result[0].last_name}`
@@ -53,6 +64,7 @@ if(result === null){
   departmnent.value = result[0].department;
   email.value = result[0].email;
   userEmail = result[0].email;
+  userName = `${result[0].first_name} ${result[0].last_name}`;
 }
 
 const assignmentdefault = document.querySelector('.noAssignment')
@@ -115,7 +127,7 @@ addAssignment.addEventListener('click', async (e) => {
   const dateValue = dateEl.value;
   const timeValue = timeEl ? timeEl.value : '09:00';
   const getpiority = piorityDetermination();
-  
+  timeVal = timeValue;
   // Combine date and time in ISO format
   const datetime = `${dateValue}T${timeValue}:00`;
   
@@ -197,7 +209,9 @@ async function displayAssignments() {
       ${reminders.map((reminder) => {
         const deadlineDate = new Date(reminder.deadline);
         const formattedDate = deadlineDate.toLocaleDateString();
-        const formattedTime = deadlineDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const correctedDate = new Date(deadlineDate.getTime() - (60 * 60 * 1000));
+        const formattedTime = correctedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
         
         return ` <div class='each-title'>
           <div><span>Title:</span> ${reminder.title}</div>
@@ -245,8 +259,8 @@ window.deleteAssignment = deleteAssignment;
 // Initial display
 displayAssignments();
 
-// Check for due reminders every minute
-setInterval(checkReminders, 60000);
+// Check for due reminders every 30 seconds (more frequent checking)
+setInterval(checkReminders, 30000);
 
 // Also check immediately on page load
 checkReminders();
@@ -263,7 +277,11 @@ async function checkReminders() {
     if (error) throw error;
     
     for (const reminder of reminders || []) {
-      const reminderTime = new Date(reminder.deadline);
+      const reminderTime = new Date(
+  new Date(reminder.deadline).getTime() - 60 * 60 * 1000
+);
+      console.log(reminderTime);
+      console.log(now >= reminderTime);
       if (now >= reminderTime) {
         await sendEmailNotification(reminder);
       }
@@ -272,30 +290,42 @@ async function checkReminders() {
     console.error('Error checking reminders:', error);
   }
 }
+console.log(new Date)
 
 async function sendEmailNotification(reminder) {
   try {
     console.log('Sending email for reminder:', reminder.title);
     
-    // Call Supabase Edge Function to send email
-    const { data, error } = await supabase.functions.invoke('send-reminder-email', {
-      body: {
-        email: reminder.user_email,
-        title: reminder.title,
-        course: reminder.course,
-        description: reminder.description,
-        deadline: reminder.deadline
-      }
-    });
+    const deadlineDate = new Date(reminder.deadline);
+    const formattedDate = deadlineDate.toLocaleDateString();
+      const correctedDate = new Date(deadlineDate.getTime() - (60 * 60 * 1000));
+        const formattedTime = correctedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+   
+    // EmailJS template parameters
+    const templateParams = {
+      to_email: reminder.user_email,
+      to_name: userName,
+      assignment_title: reminder.title,
+      course: reminder.course,
+      description: reminder.description,
+      deadline_date: formattedDate,
+      deadline_time: formattedTime,
+      priority: reminder.priority
+    };
     
-    if (error) {
-      console.error('Error calling edge function:', error);
-      return;
-    }
+    // Send email using EmailJS
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      templateParams
+    );
     
-    console.log('Email sent successfully:', data);
+    console.log('Email sent successfully:', response);
     
-    // Mark as sent
+    // Show success notification
+    alert(`Reminder email sent for: ${reminder.title}`);
+    
+    // Mark as sent in database
     await supabase
       .from('reminders')
       .update({ is_sent: true })
@@ -312,15 +342,16 @@ async function sendEmailNotification(reminder) {
     // Refresh the display
     await displayAssignments();
     
-    // Show notification to user
+    // Show browser notification if permitted
     if (Notification.permission === 'granted') {
-      new Notification('Assignment Reminder', {
-        body: `${reminder.title} is due now!`,
+      new Notification('Assignment Reminder Sent! 📧', {
+        body: `Email sent for: ${reminder.title} - ${reminder.course}`,
         icon: '/favicon.ico'
       });
     }
   } catch (error) {
     console.error('Error sending email notification:', error);
+    alert('Failed to send reminder email. Please check your EmailJS configuration.');
   }
 }
 
